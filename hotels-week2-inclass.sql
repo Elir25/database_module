@@ -34,7 +34,7 @@ INSERT INTO customers (name, email, address, city, postcode, country) VALUES ('M
 INSERT INTO customers (name, email, address, city, postcode, country) VALUES ('Steven King','steve.king123@hotmail.com','19 Bed Street','Newtown', 'xy2 3ac','UK');
 INSERT INTO customers (name, email, address, city, postcode, country) VALUES ('Nadia Sethuraman','nadia.sethuraman@mail.com','135 Green Street','Manchester','M10 4BG','UK');
 INSERT INTO customers (name, email, address, city, postcode, country) VALUES ('Melinda Marsh','mel.marsh-123@gmail.com','7 Preston Road','Oldham','OL3 5XZ','UK');
-INSERT INTO customers (name, email, address, city, postcode, country) VALUES ('MartÃ­n Sommer','martin.sommer@dfgg.net','C/ Romero, 33','Madrid','28016','Spain');
+INSERT INTO customers (name, email, address, city, postcode, country) VALUES ('Martín Sommer','martin.sommer@dfgg.net','C/ Romero, 33','Madrid','28016','Spain');
 INSERT INTO customers (name, email, address, city, postcode, country) VALUES ('Laurence Lebihan','laurence.lebihan@xmzx.net','12, rue des Bouchers','Marseille','13008','France');
 INSERT INTO customers (name, email, address, city, postcode, country) VALUES ('Keith Stewart','keith.stewart@gmail.com','84 Town Lane','Tadworth','td5 7ng','UK');
 
@@ -62,7 +62,7 @@ INSERT INTO bookings (customer_id, hotel_id, checkin_date, nights) VALUES (8, 4,
 INSERT INTO bookings (customer_id, hotel_id, checkin_date, nights) VALUES (8, 5, '2020-01-03', 7);
 INSERT INTO bookings (customer_id, hotel_id, checkin_date, nights) VALUES (8, 8, '2019-12-25', 4);
 
---Add a column date_of_birth of type DATE in the customers table.--
+1 --Add a column date_of_birth of type DATE in the customers table.--
 ALTER TABLE customers ADD column date_of_birth DATE;
 --Rename the column date_of_birth to birthdate in the customers table.
 ALTER TABLE customers rename column date_of_birth to birthdate;
@@ -70,13 +70,14 @@ ALTER TABLE customers rename column date_of_birth to birthdate;
 ALTER TABLE customers DROP COLUMN birthdate;
 select * from customers;
 
---UPDATE customers SET name='Bob Marley', country='Jamaica' WHERE id=3; STEP 2
+--3 UPDATE
 select * from hotels;
-UPDATE hotels set postcode='L10XYZ' where id=2;
+--Update the postcode of the hotel named Elder Lake Hotel to L10XYZ
+UPDATE hotels set postcode='L10XYZ' where "name"='Elder Lake';
 --Update the number of rooms of Cozy Hotel to 25
 UPDATE hotels set rooms='25' where id=7;
 --For the customer named Nadia Sethuraman, update her address to 2 Blue Street, her city to Glasgow and her postcode to G11ABC in one query
-update customers set address='2 Blue Street', city='Glasgow', postcode='G11ABC' where id=6;
+update customers set address='2 Blue Street', city='Glasgow', postcode='G11ABC' where "name"='Nadia Sethuraman';
 --Update all the bookings of customer with ID 1 for the hotel with ID 1 to 5 nights in one query
 update bookings set nights=5 where customer_id=1;
 
@@ -99,7 +100,7 @@ delete from customers where id = 6;
 --EX 5 JOIN 
 --Retrieve all the bookings along with customer data for bookings starting in 2020
 select * from bookings b 
-inner join customers c on c.id = b.customer_id where b.checkin_date > '2020-01-01';
+inner join customers c on c.id=b.customer_id where b.checkin_date > '2020-01-01';
 
 --Retrieve the customer names, booking start dates and number of nights for all 
 --customers who booked the hotel name Jade Peaks Hotel
@@ -108,9 +109,19 @@ inner join bookings b on b.customer_id = c.id
 inner join hotels h on h.id = b.hotel_id
 where h."name" = 'Jade Peaks Hotel';
 
---Retrieve all the booking start dates with customer names and hotel names for all bookings for more than 5 nights
-select * from bookings b 
-inner join customers c on c.id = b.customer_id 
-inner join hotels h on h.id = b.hotel_id 
+--Retrieve all the booking start dates with customer names and hotel 
+--> names for all bookings for more than 5 nights
+select b.checkin_date, c."name", h."name" from bookings b 
+inner join customers c on c.id=b.customer_id 
+inner join hotels h on h.id=b.hotel_id 
 where b.nights > 5;
-
+--Exercise 6
+--Retrieve all customers whose name starts with the letter S
+select * from customers c where "name" like 'S%';
+--Retrieve all hotels which have the word Hotel in their name
+select * from hotels h where h."name" like '%Hotel%';
+--Retrieve the booking start date, customer name, hotel name
+--for the top 5 bookings ordered by number of nights in descending order
+select b.checkin_date, c."name", h."name" from bookings b
+inner join customers c on b.customer_id=c.id inner join hotels h on b.hotel_id=h.id 
+order by b.nights desc limit 3;
